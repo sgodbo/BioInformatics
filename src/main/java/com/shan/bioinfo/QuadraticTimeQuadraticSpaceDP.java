@@ -1,5 +1,6 @@
 package com.shan.bioinfo;
 
+
 public class QuadraticTimeQuadraticSpaceDP {
 
 	public static void main(String[] args) {

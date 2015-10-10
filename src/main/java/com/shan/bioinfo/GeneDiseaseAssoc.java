@@ -28,72 +28,91 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
+
 public class GeneDiseaseAssoc {
 
-	private static final String APPLICATION_NAME =
-	        "Drive API Java Quickstart";
+	private static final String APPLICATION_NAME = "Drive API Java Quickstart";
 
-	    /** Directory to store user credentials for this application. */
-	    private static final java.io.File DATA_STORE_DIR = new java.io.File(
-	        System.getProperty("user.home"), ".credentials/drive-java-quickstart");
+	/** Directory to store user credentials for this application. */
+	private static final java.io.File DATA_STORE_DIR = new java.io.File(
+			System.getProperty("user.home"),
+			".credentials/drive-java-quickstart");
 
-	    /** Global instance of the {@link FileDataStoreFactory}. */
-	    private static FileDataStoreFactory DATA_STORE_FACTORY;
+	/** Global instance of the {@link FileDataStoreFactory}. */
+	private static FileDataStoreFactory DATA_STORE_FACTORY;
 
-	    /** Global instance of the JSON factory. */
-	    private static final JsonFactory JSON_FACTORY =
-	        JacksonFactory.getDefaultInstance();
+	/** Global instance of the JSON factory. */
+	private static final JsonFactory JSON_FACTORY = JacksonFactory
+			.getDefaultInstance();
 
-	    /** Global instance of the HTTP transport. */
-	    private static HttpTransport HTTP_TRANSPORT;
+	/** Global instance of the HTTP transport. */
+	private static HttpTransport HTTP_TRANSPORT;
 
-	    /** Global instance of the scopes required by this quickstart. */
-	    private static final List<String> SCOPES =
-	        Arrays.asList(DriveScopes.DRIVE_METADATA_READONLY);
-	    
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		URL url = new URL("https://drive.google.com/open?id=0B-F1_EKfc_rOWVNpMGM1SFhQSDg");
-        HttpURLConnection connection = (HttpURLConnection) url
-                .openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("GET");
-        InputStreamReader str = new InputStreamReader(connection.getInputStream());
-		//FileReader fr = new FileReader(new File("C:\\Users\\SHANDEMETZ\\Downloads\\Compressed\\gene_association.goa_human\\gene_association.goa_human"));
-		BufferedReader br = new BufferedReader(str);
-		String line = "";
-		while((line = br.readLine()) != null){
-			System.out.println(line);
-			
+	/** Global instance of the scopes required by this quickstart. */
+	private static final List<String> SCOPES = Arrays
+			.asList(DriveScopes.DRIVE_METADATA_READONLY);
+	static {
+		try {
+			HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+			DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
+		} catch (Throwable t) {
+			t.printStackTrace();
+			System.exit(1);
 		}
-		  File file = service.files().get("0B-F1_EKfc_rOWVNpMGM1SFhQSDg").execute();
-
-	      System.out.println("Title: " + file.getTitle());
-	      System.out.println("Description: " + file.getDescription());
-	      System.out.println("MIME type: " + file.getMimeType());
-	    
-		}
-	public static Credential authorize() throws IOException {
-        // Load client secrets.
-        InputStream in =
-            DriveQuickstart.class.getResourceAsStream("/client_secret.json");
-        GoogleClientSecrets clientSecrets =
-            GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow =
-                new GoogleAuthorizationCodeFlow.Builder(
-                        HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(DATA_STORE_FACTORY)
-                .setAccessType("offline")
-                .build();
-        Credential credential = new AuthorizationCodeInstalledApp(
-            flow, new LocalServerReceiver()).authorize("user");
-        System.out.println(
-                "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-        return credential;
-    }
-		
 	}
 
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		Drive service = getDriveService();
 
+		// Print the names and IDs for up to 10 files.
+		try {
+		      File file = service.files().get("0B-F1_EKfc_rOWVNpMGM1SFhQSDg").execute();
+		      String line = "";
+		      System.out.println("Title: " + file.getTitle());
+		      System.out.println("Description: " + file.getDescription());
+		      System.out.println("MIME type: " + file.getMimeType());
+		          HttpResponse resp =
+		              service.getRequestFactory().buildGetRequest(new GenericUrl(file.getWebContentLink()))
+		                  .execute();
+		          InputStreamReader ir = new InputStreamReader(resp.getContent());
+		          BufferedReader br = new BufferedReader(ir);
+		          while((line = br.readLine()) != null){
+		        	  //if(line.contains("ATP7B")){
+		        		  System.out.println(line);  
+		        	  //}
+		        	  
+		          }
+		    } catch (IOException e) {
+		      System.out.println("An error occured: " + e);
+		    }
+
+	}
+
+	public static Credential authorize() throws IOException {
+		// Load client secrets.
+		InputStream in = GeneDiseaseAssoc.class
+				.getResourceAsStream("/client_secret_1050542498663-vc18nr4o5r360jpf22v2q2fk99cfmbjq.apps.googleusercontent.com (1).json");
+		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
+				JSON_FACTORY, new InputStreamReader(in));
+
+		// Build flow and trigger user authorization request.
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+				HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+				.setDataStoreFactory(DATA_STORE_FACTORY)
+				.setAccessType("offline").build();
+		Credential credential = new AuthorizationCodeInstalledApp(flow,
+				new LocalServerReceiver()).authorize("user");
+		System.out.println("Credentials saved to "
+				+ DATA_STORE_DIR.getAbsolutePath());
+		return credential;
+	}
+
+	public static Drive getDriveService() throws IOException {
+		Credential credential = authorize();
+		return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
+				.setApplicationName(APPLICATION_NAME).build();
+	}
+
+}
