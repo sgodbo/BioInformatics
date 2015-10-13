@@ -79,9 +79,9 @@ public class GeneDiseaseAssoc {
 		          InputStreamReader ir = new InputStreamReader(resp.getContent());
 		          BufferedReader br = new BufferedReader(ir);
 		          while((line = br.readLine()) != null){
-		        	  //if(line.contains("ATP7B")){
+		        	  if(line.contains("Download anyway")){
 		        		  System.out.println(line);  
-		        	  //}
+		        	  }
 		        	  
 		          }
 		    } catch (IOException e) {
