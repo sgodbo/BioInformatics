@@ -1,10 +1,20 @@
 package com.shan.bioinfo;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.bson.BSONObject;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
@@ -16,41 +26,28 @@ import com.mongodb.MongoClientURI;
 
 public class CreateGeneAssocCollections {
 	
-public static BasicDBObject[] createSeedData(){
-        
-        BasicDBObject seventies = new BasicDBObject();
-        seventies.put("decade", "1970s");
-        seventies.put("artist", "Debby Boone");
-        seventies.put("song", "You Light Up My Life");
-        seventies.put("weeksAtOne", 10);
-        
-        BasicDBObject eighties = new BasicDBObject();
-        eighties.put("decade", "1980s");
-        eighties.put("artist", "Olivia Newton-John");
-        eighties.put("song", "Physical");
-        eighties.put("weeksAtOne", 10);
-        
-        BasicDBObject nineties = new BasicDBObject();
-        nineties.put("decade", "1990s");
-        nineties.put("artist", "Mariah Carey");
-        nineties.put("song", "One Sweet Day");
-        nineties.put("weeksAtOne", 16);
-        
-        final BasicDBObject[] seedData = {seventies, eighties, nineties};
-        
-        return seedData;
-    }
 
-	public static void main(String[] args) {
+	private static boolean containsAGeneEntry(List<BasicDBObject> listOfGeneMaps, String geneId) {
+		ListIterator<BasicDBObject> gItr = listOfGeneMaps.listIterator();
+		while(gItr.hasNext()){
+			BasicDBObject dbo = gItr.next();
+			if(dbo.containsKey(geneId)){
+				return true;
+			}
+		}
+	// TODO Auto-generated method stub
+	return false;
+}
+
+	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
         // Create seed data
-        
-        final BasicDBObject[] seedData = createSeedData();
-        
-        // Standard URI format: mongodb://[dbuser:dbpassword@]host:port/dbname
+
+		
        
-        MongoClientURI uri  = new MongoClientURI("mongodb://shandemetz:abcd1234@ds037814.mongolab.com:37814/geneassoc");
+        //MongoClientURI uri  = new MongoClientURI("mongodb://shandemetz:abcd1234@ds037814.mongolab.com:37814/geneassoc");
+		MongoClientURI uri  = new MongoClientURI("mongodb://localhost:27017/geneassoc");
         MongoClient client = new MongoClient(uri);
         DB db = client.getDB(uri.getDatabase());
         
@@ -59,20 +56,73 @@ public static BasicDBObject[] createSeedData(){
          * songs collection; it is created automatically when we insert.
          */
         
-        DBCollection songs = db.getCollection("songs");
-        DBObject dbo = BasicDBObjectBuilder.start().add("capped", true).add("size", 2000).get();
-        		db.createCollection("genegeneassoc",dbo);
+        DBObject dbo = BasicDBObjectBuilder.start().get();
+        DBCollection genes = db.createCollection("genes",dbo);
+        DBCollection diseases = db.createCollection("diseases",dbo);
+        DBCollection genediseaseassoc = db.createCollection("genediseaseassoc",dbo);
 
+        		
+        		FileReader fr = new FileReader("C:\\Users\\SHANDEMETZ\\Downloads\\Compressed\\all_gene_disease_associations.txt\\all_gene_disease_associations.txt");
+        		BufferedReader br = new BufferedReader(fr);
+        		String line = "";
+        		String[] lineSplits = null;
+        		String geneId = "";
+        		String geneName = "";
+        		String diseaseId = "";
+        		String diseaseName = "";
+        		BasicDBObject findQueryGene;
+        		BasicDBObject findQueryDisease;
+        		
+                DBCursor docsGene;
+                DBCursor docsDisease;
+                BasicDBObject mapOfGenes;
+        		BasicDBObject mapOfDiseases;
+        		BasicDBObject mapOfGeneDiseaseAssoc;
+        		int i = 0;
+        		int j = 0;
+        		br.readLine();
+        		while((line = br.readLine()) != null){
+        			mapOfGenes = new BasicDBObject();
+        			mapOfDiseases = new BasicDBObject();
+        			mapOfGeneDiseaseAssoc = new BasicDBObject();
+        			lineSplits = line.split("\t");
+        			geneId = lineSplits[0];
+        			geneName = lineSplits[1];
+        			diseaseId = Arrays.asList(lineSplits[3].split(":")).get(1);
+        			diseaseName = lineSplits[4];
+        			findQueryGene = new BasicDBObject("_id",geneId);
+        			findQueryDisease = new BasicDBObject("_id",diseaseId);
+        			docsGene = genes.find(findQueryGene);
+        			docsDisease = diseases.find(findQueryDisease);
+        			if(!docsGene.hasNext()){
+        				mapOfGenes.put("_id",geneId);
+        				mapOfGenes.put("geneName",geneName);
+        				genes.insert(mapOfGenes);
+        			}
+        			if(!docsDisease.hasNext()){
+        				mapOfDiseases.put("_id",diseaseId);
+        				mapOfDiseases.put("diseaseName", diseaseName);
+        				diseases.insert(mapOfDiseases);
+        			}
+        				mapOfGeneDiseaseAssoc.put("_id", i);
+        				mapOfGeneDiseaseAssoc.put("diseaseId",diseaseId);
+            			mapOfGeneDiseaseAssoc.put("geneId", geneId);
+            			genediseaseassoc.insert(mapOfGeneDiseaseAssoc);
+            			i++;
+        			
+        			j++;
+        			System.out.println(j);
+        		}
+        	    
         // Note that the insert method can take either an array or a document.
-        
-        songs.insert(seedData);
+        //songs.insert(seedData);
        
         /*
          * Then we need to give Boyz II Men credit for their contribution to
          * the hit "One Sweet Day".
          */
 
-        BasicDBObject updateQuery = new BasicDBObject("song", "One Sweet Day");
+        /*BasicDBObject updateQuery = new BasicDBObject("song", "One Sweet Day");
         songs.update(updateQuery, new BasicDBObject("$set", new BasicDBObject("artist", "Mariah Carey ft. Boyz II Men")));
         
         /*
@@ -80,23 +130,18 @@ public static BasicDBObject[] createSeedData(){
          * or more weeks at number 1.
          */
       
-        BasicDBObject findQuery = new BasicDBObject("weeksAtOne", new BasicDBObject("$gte",10));
-        BasicDBObject orderBy = new BasicDBObject("decade", 1);
+        //BasicDBObject findQuery = new BasicDBObject("weeksAtOne", new BasicDBObject("$gte",10));
+        
 
-        DBCursor docs = songs.find(findQuery).sort(orderBy);
-
-        while(docs.hasNext()){
+        /*while(docs.hasNext()){
             DBObject doc = docs.next();
             System.out.println(
-                "In the " + doc.get("decade") + ", " + doc.get("song") + 
-                " by " + doc.get("artist") + " topped the charts for " + 
-                doc.get("weeksAtOne") + " straight weeks."
+                doc.get("geneId") + ":" + doc.get("geneName")
             );
-        }
+        }*/
         
         // Since this is an example, we'll clean up after ourselves.
 
-        songs.drop();
         
         // Only close the connection when your app is terminating
 
