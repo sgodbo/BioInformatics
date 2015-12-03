@@ -1,4 +1,4 @@
-package com.shan.bioinfo;
+package com.shan.bioinfo.Mongo;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

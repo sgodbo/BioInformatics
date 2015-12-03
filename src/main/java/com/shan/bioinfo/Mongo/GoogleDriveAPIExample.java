@@ -1,4 +1,4 @@
-package com.shan.bioinfo;
+package com.shan.bioinfo.Mongo;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -30,7 +30,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-public class GeneDiseaseAssoc {
+public class GoogleDriveAPIExample {
 
 	private static final String APPLICATION_NAME = "Drive API Java Quickstart";
 
@@ -92,7 +92,7 @@ public class GeneDiseaseAssoc {
 
 	public static Credential authorize() throws IOException {
 		// Load client secrets.
-		InputStream in = GeneDiseaseAssoc.class
+		InputStream in = GoogleDriveAPIExample.class
 				.getResourceAsStream("/client_secret_1050542498663-vc18nr4o5r360jpf22v2q2fk99cfmbjq.apps.googleusercontent.com (1).json");
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
 				JSON_FACTORY, new InputStreamReader(in));

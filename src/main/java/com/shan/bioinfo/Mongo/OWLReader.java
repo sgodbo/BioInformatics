@@ -36,7 +36,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.shan.bioinfo;
+package com.shan.bioinfo.Mongo;
 
 import static org.semanticweb.owlapi.vocab.OWLFacet.*;
 
@@ -52,6 +52,8 @@ import java.util.Set;
 
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLOntologyDocumentTarget;
 import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
@@ -142,7 +144,12 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
-
+/**
+ * @author Matthew Horridge, The University Of Manchester, Bio-Health Informatics
+ *         Group, Date: 11-Jan-2007
+ */
+@Ignore
+@SuppressWarnings("javadoc")
 public class OWLReader {
 
     private static final String PIZZA_IRI = "http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl";
@@ -156,27 +163,28 @@ public class OWLReader {
         // Get hold of an ontology manager
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         // Let's load an ontology from the web
-        IRI iri = IRI
+        /*IRI iri = IRI
                 .create("http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl");
         OWLOntology pizzaOntology = manager
                 .loadOntologyFromOntologyDocument(iri);
         System.out.println("Loaded ontology: " + pizzaOntology);
         // Remove the ontology so that we can load a local copy.
-        manager.removeOntology(pizzaOntology);
+        manager.removeOntology(pizzaOntology);*/
         // We can also load ontologies from files. Download the pizza ontology
         // from http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl
         // and put it
         // somewhere on your hard drive Create a file object that points to the
         // local copy
-        File file = new File("/tmp/pizza.owl");
+        //File file = new File("/tmp/pizza.owl");
+        File file = new File("C:\\Users\\SHANDEMETZ\\Desktop\\go.owl");
         // Now load the local copy
         OWLOntology localPizza = manager.loadOntologyFromOntologyDocument(file);
         System.out.println("Loaded ontology: " + localPizza);
         // We can always obtain the location where an ontology was loaded from
-        IRI documentIRI = manager.getOntologyDocumentIRI(localPizza);
+        /*IRI documentIRI = manager.getOntologyDocumentIRI(localPizza);
         System.out.println("    from: " + documentIRI);
         // Remove the ontology again so we can reload it later
-        manager.removeOntology(pizzaOntology);
+        manager.removeOntology(pizzaOntology);*/
         // In cases where a local copy of one of more ontologies is used, an
         // ontology IRI mapper can be used to provide a redirection mechanism.
         // This means that ontologies can be loaded as if they were located on
@@ -184,15 +192,15 @@ public class OWLReader {
         // http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl to
         // our local copy
         // above.
-        manager.addIRIMapper(new SimpleIRIMapper(iri, IRI.create(file)));
+        //manager.addIRIMapper(new SimpleIRIMapper(iri, IRI.create(file)));
         // Load the ontology as if we were loading it from the web (from its
         // ontology IRI)
-        IRI pizzaOntologyIRI = IRI
+        /*IRI pizzaOntologyIRI = IRI
                 .create("http://owl.cs.manchester.ac.uk/co-ode-files/ontologies/pizza.owl");
         OWLOntology redirectedPizza = manager.loadOntology(pizzaOntologyIRI);
         System.out.println("Loaded ontology: " + redirectedPizza);
         System.out.println("    from: "
-                + manager.getOntologyDocumentIRI(redirectedPizza));
+                + manager.getOntologyDocumentIRI(redirectedPizza));*/
         // Note that when imports are loaded an ontology manager will be
         // searched for mappings
     }
@@ -205,6 +213,7 @@ public class OWLReader {
      * @throws OWLOntologyCreationException
      * @throws IOException
      */
+    @Test
     public void shouldSaveOntologies() throws OWLOntologyStorageException,
             OWLOntologyCreationException, IOException {
         // Get hold of an ontology manager
@@ -258,6 +267,7 @@ public class OWLReader {
      * 
      * @throws OWLOntologyCreationException
      */
+    @Test
     public void shouldAccessEntities() throws OWLOntologyCreationException {
         // In order to get access to objects that represent entities we need a
         // data factory.

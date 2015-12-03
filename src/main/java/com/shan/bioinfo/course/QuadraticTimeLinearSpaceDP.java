@@ -1,4 +1,4 @@
-package com.shan.bioinfo;
+package com.shan.bioinfo.course;
 
 
 public class QuadraticTimeLinearSpaceDP {
