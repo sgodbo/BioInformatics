@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
 import org.xml.sax.SAXException;
 
 public class CheckForDisAnnotSimInPubMed {
@@ -17,12 +15,12 @@ public class CheckForDisAnnotSimInPubMed {
 			XPathExpressionException, ParserConfigurationException,
 			SAXException {
 		BufferedReader br1 = new BufferedReader(new FileReader(new File(
-				"outputs\\annotNameList.csv")));
+				"outputs/annotNameList.csv")));
 		BufferedReader br2 = new BufferedReader(new FileReader(new File(
-				"outputs\\diseaseNameList.csv")));
+				"outputs/diseaseNameList.csv")));
 		BufferedReader br3;
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
-				"outputs\\diseaseFunctionScoreInPubMed2015.csv")));
+				"outputs/diseaseFunctionScoreInPubMed2015.csv")));
 		Map<String, String> diseaseMap = new HashMap<String, String>();
 		Map<String, String> annotationMap = new HashMap<String, String>();
 		String line1 = "";
@@ -52,7 +50,7 @@ public class CheckForDisAnnotSimInPubMed {
 		int testCount = 0;
 		for (int i = 0; i < 13; i++) {
 			br3 = new BufferedReader(new FileReader(new File(
-					"outputs\\matching_coefficients" + i + ".csv")));
+					"outputs/matching_coefficients" + i + ".csv")));
 			/*while(null != br3.readLine() && testCount < 2360){
 				testCount++;
 			}*/
@@ -94,7 +92,7 @@ public class CheckForDisAnnotSimInPubMed {
 							bw = new BufferedWriter(
 									new FileWriter(
 											new File(
-													"outputs\\diseaseFunctionScoreInPubMed2015.csv"),
+													"outputs/diseaseFunctionScoreInPubMed2015.csv"),
 											true));
 							System.out.println(diseaseId + "," + annotId + ","
 									+ disScore + "," + funcScore + ","
