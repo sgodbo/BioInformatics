@@ -10,7 +10,7 @@ public class GeneDiseaseGraph {
 
 	public void createDiseaseGeneMap() throws IOException {
 		File raf = new File("outputs\\disGeneMap.txt");
-		File raf2 = new File("outputs\\geneList2.txt");
+		File raf2 = new File("outputs\\geneListDis.txt");
 		FileReader fr = new FileReader(
 				"C:\\Users\\SHANDEMETZ\\Downloads\\Compressed\\all_gene_disease_associations.txt\\all_gene_disease_associations.txt");
 		BufferedReader br = new BufferedReader(fr);

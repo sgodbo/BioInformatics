@@ -5,14 +5,14 @@ import java.util.*;
 
 public class GeneAnnotationGraph {
 
-	private Map<String, ArrayList<String>> mapOfGenesAssocDisease;
+	private Map<String, ArrayList<String>> mapOfGenesAssocAnnot;
 	private List<String> listOfGenes;
 
 	public Map<String, ArrayList<String>> createAnnotationGeneMap()
 			throws IOException {
 		// TODO Auto-generated method stub
 		File raf = new File("outputs\\annotGeneMap.txt");
-		File raf2 = new File("outputs\\geneList1.txt");
+		File raf2 = new File("outputs\\geneListAnnot.txt");
 		FileReader fr = new FileReader(
 				new File(
 						"C:\\Users\\SHANDEMETZ\\Downloads\\Compressed\\gene_association.goa_human\\gene_association.goa_human"));
@@ -23,7 +23,7 @@ public class GeneAnnotationGraph {
 
 		String geneName = "";
 		String annotationId = "";
-		mapOfGenesAssocDisease = new LinkedHashMap<String, ArrayList<String>>();
+		mapOfGenesAssocAnnot = new LinkedHashMap<String, ArrayList<String>>();
 		listOfGenes = new ArrayList<String>();
 		for (int i = 0; i < 34; i++) {
 			br.readLine();
@@ -36,43 +36,43 @@ public class GeneAnnotationGraph {
 			// annotationName = lineSplits[4];
 			
 			
-			if (mapOfGenesAssocDisease.containsKey(annotationId)) {
-				ArrayList<String> listOfDiseaseAssoc = mapOfGenesAssocDisease
+			if (mapOfGenesAssocAnnot.containsKey(annotationId)) {
+				ArrayList<String> listOfDiseaseAssoc = mapOfGenesAssocAnnot
 						.get(annotationId);
 				listOfDiseaseAssoc.add(geneName);
 				// Collections.sort(listOfDiseaseAssoc);
 				if (!listOfGenes.contains(geneName)) {
 					listOfGenes.add(geneName);
 				}
-				mapOfGenesAssocDisease.put(annotationId, listOfDiseaseAssoc);
+				mapOfGenesAssocAnnot.put(annotationId, listOfDiseaseAssoc);
 			} else {
 				ArrayList<String> listOfDiseaseAssoc = new ArrayList<String>();
 				listOfDiseaseAssoc.add(geneName);
 				if (!listOfGenes.contains(geneName)) {
 					listOfGenes.add(geneName);
 				}
-				mapOfGenesAssocDisease.put(annotationId, listOfDiseaseAssoc);
+				mapOfGenesAssocAnnot.put(annotationId, listOfDiseaseAssoc);
 			}
 		}
 		br.close();
 		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(raf));
-		oos.writeObject(mapOfGenesAssocDisease);
+		oos.writeObject(mapOfGenesAssocAnnot);
 		oos.close();
 		
 		ObjectOutputStream oos2 = new ObjectOutputStream(new FileOutputStream(raf2));
 		oos2.writeObject(listOfGenes);
 		oos2.close();
 		//bw.close();
-		return mapOfGenesAssocDisease;
+		return mapOfGenesAssocAnnot;
 	}
 
 	public Map<String, ArrayList<String>> getMapOfGenesAssocDisease() {
-		return mapOfGenesAssocDisease;
+		return mapOfGenesAssocAnnot;
 	}
 
 	public void setMapOfGenesAssocDisease(
 			Map<String, ArrayList<String>> mapOfGenesAssocDisease) {
-		this.mapOfGenesAssocDisease = mapOfGenesAssocDisease;
+		this.mapOfGenesAssocAnnot = mapOfGenesAssocDisease;
 	}
 
 	public List<String> getListOfGenes() {

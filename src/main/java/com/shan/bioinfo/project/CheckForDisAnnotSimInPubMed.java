@@ -17,15 +17,14 @@ public class CheckForDisAnnotSimInPubMed {
 			XPathExpressionException, ParserConfigurationException,
 			SAXException {
 		BufferedReader br1 = new BufferedReader(new FileReader(new File(
-				"outputs\\annotationNamesList.csv")));
+				"outputs\\annotNameList.csv")));
 		BufferedReader br2 = new BufferedReader(new FileReader(new File(
-				"outputs\\diseaseNamesList.csv")));
+				"outputs\\diseaseNameList.csv")));
 		BufferedReader br3;
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
-				"outputs\\diseaseFunctionScoreInPubMed2012.txt")));
+				"outputs\\diseaseFunctionScoreInPubMed2015.csv")));
 		Map<String, String> diseaseMap = new HashMap<String, String>();
 		Map<String, String> annotationMap = new HashMap<String, String>();
-		Map<String, String> diseaseAnnotationMap = new HashMap<String, String>();
 		String line1 = "";
 		String[] line1Splits;
 		String line2 = "";
@@ -50,48 +49,54 @@ public class CheckForDisAnnotSimInPubMed {
 			diseaseMap.put(line2Splits[0], line2Splits[1]);
 		}
 		br2.close();
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < 13; i++) {
 			br3 = new BufferedReader(new FileReader(new File(
-					"outputs\\oldOutputs\\matching_coefficients" + i + ".csv")));
+					"outputs\\matching_coefficients" + i + ".csv")));
 			while (null != (line3 = br3.readLine())) {
-				line3Splits = line3.split(",");
+				line3Splits = line3.split(" ");
 				String diseaseId = line3Splits[0];
 				String annotId = line3Splits[1];
 				String diseaseName = diseaseMap.get(diseaseId);
 				String annotName = annotationMap.get(annotId);
-				diseaseAnnotationMap.put(diseaseName, annotName);
-			}
-		}
+				ArrayList<String> disAndAnnot = new ArrayList<String>();
+				disAndAnnot.add(diseaseName);
+				disAndAnnot.add(annotName);
+				//listOfDisAnnots.add(disAndAnnot);
+				// diseaseAnnotationMap.put(diseaseName, annotName);
 
-		for (Entry<String, String> entry : diseaseAnnotationMap.entrySet()) {
-			diseaseString = entry.getKey();
-			annotationString = entry.getValue();
-			diseaseString = diseaseString.replaceAll(" ", "%20");
-			annotationString = annotationString.replaceAll(" ", "%20");
-			disScore = q1.countPaperHits(diseaseString);
-			funcScore = q1.countPaperHits(annotationString);
-			comScore = q1.countPaperHits(diseaseString + "%20"
-					+ annotationString);
-			
-			bw.write(diseaseString + "," + annotationString + ","
-					+ "," + disScore + "," + funcScore + "," + comScore);
-			System.out.println(diseaseString + "," + annotationString + ","
-					+ "," + disScore + "," + funcScore + "," + comScore);
-			bw.write("\n");
-			/*StatSignificance s1 = new StatSignificance(cummScore, disScore,
-					funcScore, n);
-			finalScore = s1.calculateStatSignificance();
-			if (finalScore > 0.0d) {
-				diseaseString = diseaseString.replaceAll("%20", " ");
-				annotationString = annotationString.replaceAll("%20", " ");
-				bw.write(diseaseString + "," + annotationString + ","
-						+ finalScore);
-				System.out.println(diseaseString + "," + annotationString + ","
-						+ finalScore);
-				bw.write("\n");
-			}*/
-			System.out.println();
-		}
-		bw.close();
+					
+					diseaseString = disAndAnnot.get(0);
+					annotationString = disAndAnnot.get(1);
+					diseaseString = diseaseString.replaceAll(" ", "%20");
+					annotationString = annotationString.replaceAll(" ", "%20");
+					disScore = q1.countPaperHits(diseaseString);
+					funcScore = q1.countPaperHits(annotationString);
+					comScore = q1.countPaperHits(diseaseString + "%20"
+							+ annotationString);
+
+					StatSignificance s1 = new StatSignificance(comScore,
+							disScore, funcScore, n);
+					finalScore = s1.calculateStatSignificance();
+					if (finalScore > 1.3d) {
+						diseaseString = diseaseString.replaceAll("%20", " ");
+						annotationString = annotationString.replaceAll("%20",
+								" ");
+						bw = new BufferedWriter(new FileWriter(new File(
+								"outputs\\diseaseFunctionScoreInPubMed2015.csv"),true));
+						System.out.println(diseaseString + ","
+								+ annotationString + "," + disScore + ","
+								+ funcScore + "," + comScore + "," + finalScore);
+						bw.write(diseaseString + "," + annotationString
+								+ "," + disScore + "," + funcScore + ","
+								+ comScore + "," + finalScore);
+						bw.write("\n");
+
+						bw.close();
+					}
+
+				}
+			}
+
+		
 	}
 }

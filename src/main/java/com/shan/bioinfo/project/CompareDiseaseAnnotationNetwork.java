@@ -16,30 +16,28 @@ public class CompareDiseaseAnnotationNetwork {
 	Map<String, ArrayList<String>> mapAnnotationGene;
 	Map<String, ArrayList<String>> mapDiseaseGene;
 	static int sizeOfBagOfGenes;
+	static int lineCounter;
 	//static Iterator<Entry<String, ArrayList<String>>> dMapItr;
 	//static Set<Entry<String, ArrayList<String>>> aMapItr;
-	static Map<String, ArrayList<String>> synchronizedDisMap;
+	//static Iterator<Entry<String, ArrayList<String>>> synchronizedDisMapItr;
 
-	static class ThreadApproach extends Thread {
+	public static class ThreadApproach {
 		
 		int counterForThread;
 		boolean append = false;
 		Entry<String,ArrayList<String>> entryAnnot;
+		Entry<String,ArrayList<String>> entryDis;
 		
-		public ThreadApproach(Entry<String, ArrayList<String>> entry,
-				int counter, int ctr) {
+		public ThreadApproach(Entry<String, ArrayList<String>> next,
+				Entry<String, ArrayList<String>> next2, int counter) {
 			// TODO Auto-generated constructor stub
-			this.counterForThread = counter;
-			if(ctr > 0){
+			entryAnnot = next;
+			entryDis = next2;
+			if(counter > 1){
 				append = true;
 			}
-			this.entryAnnot = entry;
 		}
 
-		
-
-
-		@SuppressWarnings("unchecked")
 		public void run() {
 			// TODO Auto-generated method stub
 
@@ -51,14 +49,15 @@ public class CompareDiseaseAnnotationNetwork {
 			try {
 
 				BufferedWriter bw;
+				if(lineCounter%100000 == 1)
+					append = false;
 				bw = new BufferedWriter(new FileWriter(new File(
-						"outputs/matching_coefficients" + counterForThread
-								+ ".csv"),append));
-				
+						"outputs/matching_coefficients" + lineCounter/100000 +".csv"),append));
+				append = true;
 				//while (dMapItr.hasNext()) {
-				for(Entry<String,ArrayList<String>> entry: synchronizedDisMap.entrySet()){
-					//Entry<String,ArrayList<String>> entry = dMapItr.next();
-					string1 = entry.getValue();
+				//while(synchronizedDisMapItr.hasNext()){
+					//Entry<String,ArrayList<String>> entry = synchronizedDisMapItr.next();
+					string1 = entryDis.getValue();
 					int l1 = string1.size();
 					List<String> copyOfString1 = new ArrayList<String>();
 					copyOfString1.addAll(string1);
@@ -79,20 +78,18 @@ public class CompareDiseaseAnnotationNetwork {
 							score = s1.calculateStatSignificance();}
 						if (score > threshholdScore) {
 							ListIterator<String> commItr = copyOfString1.listIterator();
-							bw.write(entry.getKey() + " " + entryAnnot.getKey()+" "+l1+" "+l2+" "+copyOfString1.size()+" "+score+" ");
+							bw.write(entryDis.getKey() + " " + entryAnnot.getKey()+" "+l1+" "+l2+" "+copyOfString1.size()+" "+score+" ");
 							while(commItr.hasNext()){ 
 								bw.write(commItr.next() + " ");
 							}
 							bw.write("\n");
+							lineCounter++;
 						}
 					
-				}
+				//}
 				bw.close();
-				Thread.sleep(1000);
+				//Thread.sleep(1000);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -112,8 +109,8 @@ public class CompareDiseaseAnnotationNetwork {
 		List<String> listOfGenes2 = g2.getListOfGenes();*/
 		ObjectInputStream ois1 = new ObjectInputStream(new FileInputStream(new File("outputs\\annotGeneMap.txt")));
 		ObjectInputStream ois2 = new ObjectInputStream(new FileInputStream(new File("outputs\\disGeneMap.txt")));
-		ObjectInputStream ois3 = new ObjectInputStream(new FileInputStream(new File("outputs\\geneList1.txt")));
-		ObjectInputStream ois4 = new ObjectInputStream(new FileInputStream(new File("outputs\\geneList2.txt")));
+		ObjectInputStream ois3 = new ObjectInputStream(new FileInputStream(new File("outputs\\geneListAnnot.txt")));
+		ObjectInputStream ois4 = new ObjectInputStream(new FileInputStream(new File("outputs\\geneListDis.txt")));
 		List<String> listOfGenes1 = (List<String>) ois3.readObject();
 		List<String> listOfGenes2 = (List<String>) ois4.readObject();
 		sizeOfBagOfGenes = (listOfGenes1.size() > listOfGenes2.size()) ? listOfGenes1.size():listOfGenes2.size();
@@ -125,26 +122,37 @@ public class CompareDiseaseAnnotationNetwork {
 		ois3.close();
 		ois4.close();
 		
-		
+		Iterator<Entry<String,ArrayList<String>>> mapAnnotItr = mapAnnotationGene.entrySet().iterator();
+		int counter = 1;
+		lineCounter = 1;
+		while (mapAnnotItr.hasNext()) {
+			Entry<String,ArrayList<String>> entry1 = mapAnnotItr.next();
+			Iterator<Entry<String,ArrayList<String>>> mapDisItr = mapDiseaseGene.entrySet().iterator();
+			while (mapDisItr.hasNext()) {
+				Entry<String,ArrayList<String>> entry2 = mapDisItr.next();
+				ThreadApproach t1 = new ThreadApproach(entry1, entry2, counter);
+				t1.run();
+			}
+			System.out.println(counter);
+			counter++;
+		}
 		//aMapItr = mapAnnotationGene.entrySet();
-		int ctr = 0;
+		/*int ctr = 0;
 		for (Entry<String, ArrayList<String>> entry : mapAnnotationGene
 				.entrySet()) {
 			//dMapItr = mapDiseaseGene.entrySet().iterator();
 			//ExecutorService execs = Executors.newFixedThreadPool(10);
-			synchronizedDisMap = Collections.synchronizedMap(mapDiseaseGene);
+			synchronizedDisMapItr = Collections.synchronizedMap(mapDiseaseGene).entrySet().iterator();
 			ThreadApproach[] tArr = new ThreadApproach[10];
 			for (int counter = 0; counter < 10; counter++) {
 				tArr[counter] = new ThreadApproach(entry, counter, ctr);
 				tArr[counter].start();
 			}
-			/*for(int i = 0;i < 10;i++){
-				tArr[i].stop();
-			}*/
+			
 			
 			ctr++;
 			System.out.println(ctr);
-		}
+		}*/
 		
 
 	}
