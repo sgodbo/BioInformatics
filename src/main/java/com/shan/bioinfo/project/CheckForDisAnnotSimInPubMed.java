@@ -68,8 +68,8 @@ public class CheckForDisAnnotSimInPubMed {
 				annotationString = disAndAnnot.get(1);
 				diseaseString = diseaseString.replaceAll(" ", "%20");
 				annotationString = annotationString.replaceAll(" ", "%20");
-				if ((null != diseaseString || !diseaseString.isEmpty())
-						&& (null != annotationString || !annotationString
+				if ((null != diseaseString && !diseaseString.isEmpty())
+						&& (null != annotationString && !annotationString
 								.isEmpty())) {
 					disScore = q1.countPaperHits(diseaseString);
 					funcScore = q1.countPaperHits(annotationString);
@@ -89,10 +89,10 @@ public class CheckForDisAnnotSimInPubMed {
 												"outputs\\diseaseFunctionScoreInPubMed2015.csv"),
 										true));
 						System.out
-								.println(diseaseString + "," + annotationString
+								.println(diseaseId + "," + annotId
 										+ "," + disScore + "," + funcScore
 										+ "," + comScore + "," + finalScore);
-						bw.write(diseaseString + "," + annotationString + ","
+						bw.write(diseaseId + "," + annotId + ","
 								+ disScore + "," + funcScore + "," + comScore
 								+ "," + finalScore);
 						bw.write("\n");
