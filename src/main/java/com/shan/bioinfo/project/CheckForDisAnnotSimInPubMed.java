@@ -49,9 +49,14 @@ public class CheckForDisAnnotSimInPubMed {
 			diseaseMap.put(line2Splits[0], line2Splits[1]);
 		}
 		br2.close();
+		int testCount = 0;
 		for (int i = 0; i < 13; i++) {
 			br3 = new BufferedReader(new FileReader(new File(
 					"outputs\\matching_coefficients" + i + ".csv")));
+			/*while(null != br3.readLine() && testCount < 2360){
+				testCount++;
+			}*/
+			
 			while (null != (line3 = br3.readLine())) {
 				line3Splits = line3.split(" ");
 				String diseaseId = line3Splits[0];
@@ -66,41 +71,44 @@ public class CheckForDisAnnotSimInPubMed {
 
 				diseaseString = disAndAnnot.get(0);
 				annotationString = disAndAnnot.get(1);
-				diseaseString = diseaseString.replaceAll(" ", "%20");
-				annotationString = annotationString.replaceAll(" ", "%20");
-				if ((null != diseaseString && !diseaseString.isEmpty())
-						&& (null != annotationString && !annotationString
-								.isEmpty())) {
-					disScore = q1.countPaperHits(diseaseString);
-					funcScore = q1.countPaperHits(annotationString);
-					comScore = q1.countPaperHits(diseaseString + "%20"
-							+ annotationString);
+				if (null != diseaseString && null != annotationString) {
+					if (!diseaseString.isEmpty()
+							&& (!annotationString.isEmpty())) {
+						diseaseString = diseaseString.replaceAll(" ", "%20");
+						annotationString = annotationString.replaceAll(" ",
+								"%20");
 
-					StatSignificance s1 = new StatSignificance(comScore,
-							disScore, funcScore, n);
-					finalScore = s1.calculateStatSignificance();
-					if (finalScore > 1.3d) {
-						diseaseString = diseaseString.replaceAll("%20", " ");
-						annotationString = annotationString.replaceAll("%20",
-								" ");
-						bw = new BufferedWriter(
-								new FileWriter(
-										new File(
-												"outputs\\diseaseFunctionScoreInPubMed2015.csv"),
-										true));
-						System.out
-								.println(diseaseId + "," + annotId
-										+ "," + disScore + "," + funcScore
-										+ "," + comScore + "," + finalScore);
-						bw.write(diseaseId + "," + annotId + ","
-								+ disScore + "," + funcScore + "," + comScore
-								+ "," + finalScore);
-						bw.write("\n");
+						disScore = q1.countPaperHits(diseaseString);
+						funcScore = q1.countPaperHits(annotationString);
+						comScore = q1.countPaperHits(diseaseString + "%20"
+								+ annotationString);
 
-						bw.close();
+						StatSignificance s1 = new StatSignificance(comScore,
+								disScore, funcScore, n);
+						finalScore = s1.calculateStatSignificance();
+						if (finalScore > 1.3d) {
+							diseaseString = diseaseString
+									.replaceAll("%20", " ");
+							annotationString = annotationString.replaceAll(
+									"%20", " ");
+							bw = new BufferedWriter(
+									new FileWriter(
+											new File(
+													"outputs\\diseaseFunctionScoreInPubMed2015.csv"),
+											true));
+							System.out.println(diseaseId + "," + annotId + ","
+									+ disScore + "," + funcScore + ","
+									+ comScore + "," + finalScore);
+							bw.write(diseaseId + "," + annotId + "," + disScore
+									+ "," + funcScore + "," + comScore + ","
+									+ finalScore);
+							bw.write("\n");
+
+							bw.close();
+						}
 					}
-				}
 
+				}
 			}
 		}
 
