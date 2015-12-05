@@ -68,9 +68,9 @@ public class CheckForDisAnnotSimInPubMed {
 				annotationString = disAndAnnot.get(1);
 				diseaseString = diseaseString.replaceAll(" ", "%20");
 				annotationString = annotationString.replaceAll(" ", "%20");
-				if ((!diseaseString.isEmpty() || !diseaseString.equals(""))
-						&& (!annotationString.isEmpty() || !annotationString
-								.equals(""))) {
+				if ((null != diseaseString || !diseaseString.isEmpty())
+						&& (null != annotationString || !annotationString
+								.isEmpty())) {
 					disScore = q1.countPaperHits(diseaseString);
 					funcScore = q1.countPaperHits(annotationString);
 					comScore = q1.countPaperHits(diseaseString + "%20"
