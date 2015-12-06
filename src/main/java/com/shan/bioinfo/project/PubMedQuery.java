@@ -18,8 +18,8 @@ public class PubMedQuery {
 				/*URL u1 = new URL(
 						"http://www.ebi.ac.uk/QuickGO/GTerm?id=GO:0005232&format=oboxml");*/
 				//System.out.println("Query1:"+inputString);
-				URL u1 = new URL("http://www.ebi.ac.uk/europepmc/webservices/rest/search?query="+inputString);
-				//URL u2 = new URL("http://www.ebi.ac.uk/europepmc/webservices/rest/search?query="+inputString+"%20PUB_YEAR:[2012%20TO%202015]");
+				//URL u1 = new URL("http://www.ebi.ac.uk/europepmc/webservices/rest/search?query="+inputString);
+				URL u1 = new URL("http://www.ebi.ac.uk/europepmc/webservices/rest/profile?query="+inputString+"%20PUB_YEAR:[1800%20TO%202012]");
 				// Connect
 				HttpURLConnection urlConnection1 = (HttpURLConnection) u1
 						.openConnection();
@@ -43,7 +43,7 @@ public class PubMedQuery {
 				
 				//XPath xpath2 = XPathFactory.newInstance().newXPath();
 				
-				int result1 = Integer.parseInt(xpath1.compile("/responseWrapper/hitCount").evaluate(xml1));
+				int result1 = Integer.parseInt(xpath1.compile("/responseWrapper/profileList/pubType[@name='ALL']/@count").evaluate(xml1));
 				//int result2 = Integer.parseInt(xpath2.compile("/responseWrapper/hitCount").evaluate(xml2));
 				// Locate the term name and print it out
 				/*System.out.println("Term name:"
