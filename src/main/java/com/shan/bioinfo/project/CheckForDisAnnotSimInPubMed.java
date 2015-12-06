@@ -50,10 +50,10 @@ public class CheckForDisAnnotSimInPubMed {
 		int testCount = 0;
 		for (int i = 0; i < 13; i++) {
 			br3 = new BufferedReader(new FileReader(new File(
-					"outputs/matching_coefficients" + i + ".csv")));
-			/*while(null != br3.readLine() && testCount < 2360){
+					"outputs/matching_coefficients0" + i + ".csv")));
+			while(null != br3.readLine() && testCount < 2450){
 				testCount++;
-			}*/
+			}
 			
 			while (null != (line3 = br3.readLine())) {
 				line3Splits = line3.split(" ");
